@@ -7,6 +7,7 @@ import subprocess
 
 
 lastmodified_file_name = 'lastmodified.txt'
+time_format = '%Y-%m-%d %H:%M:%S'
 
 def print_files(num_files, directory):
     modified = []
@@ -18,13 +19,13 @@ def print_files(num_files, directory):
                 try:
                     filename = os.path.join(root, file)
                     modified_time = os.stat(os.path.join(root, file))[stat.ST_MTIME]
-                    human_modified_time = dt.datetime.fromtimestamp(modified_time).strftime('%Y-%m-%d %H:%M:%S')
+                    human_modified_time = dt.datetime.fromtimestamp(modified_time).strftime(time_format)
                     modified.append((human_modified_time, filename))
                 except:
                     pass
     modified.sort(key=lambda a: a[0], reverse=True)
-    modified = filter(lambda x: (dt.datetime.strptime(x[0], '%Y-%m-%d %H:%M:%S') > dt.datetime.strptime(lastmodified_date, '%Y-%m-%d %H:%M:%S')
-        and 'lastmodified.txt' not in x[1]), modified)
+    modified = filter(lambda x: (dt.datetime.strptime(x[0], time_format) > dt.datetime.strptime(lastmodified_date, '%Y-%m-%d %H:%M:%S')
+        and lastmodified_file_name not in x[1]), modified)
     print('Modified')
     pprint(modified)
     for item in modified:
@@ -33,7 +34,7 @@ def print_files(num_files, directory):
     if(len(modified) > 0):
         lastmodified_date = modified[0][0]
     else:
-        lastmodified_date = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        lastmodified_date = dt.datetime.now().strftime(time_format)
     persistLastModifiedDate(lastmodified_date)
 
 def persistLastModifiedDate(str):
@@ -63,7 +64,7 @@ def main():
     parser.set_defaults(init=False)
     args = parser.parse_args()
     if(args.init):
-        persistLastModifiedDate(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        persistLastModifiedDate(dt.datetime.now().strftime(time_format))
     else:
         print_files(args.number, args.directory)
 
